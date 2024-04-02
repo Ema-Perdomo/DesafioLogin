@@ -1,0 +1,19 @@
+<h1>productos</h1>
+
+{{#if mostrarProductos}}
+    {{!-- mostrarProductos true --}}
+    {{#each products}}
+        <div>
+            {{!-- This hace referencia al objeto que se encuentra dentro del array productos --}}
+            <p>Titulo: {{this.title}}</p>
+            <p>Descripcion: {{this.description}} </p>
+            <p>Precio: {{this.price}}</p>
+            <p>Stock: {{this.stock}}</p>
+            <img src="{{this.img}}" alt="Imagen de {{this.title}}">
+        </div>
+    {{/each}}
+{{else}}
+    {{!-- mostrarProductos false --}}
+    <p>No se pueden mostar los productos.
+    Por favor, intente más tarde. </p>
+{{/if}}
