@@ -40,7 +40,7 @@ sessionRouter.get('/githubSession', passport.authenticate('github'), async (req,
         email: req.user.email,
         first_name: req.user.first_name,
     }
-    res.redirect('/api/products')
+    res.redirect('/')
 })
 sessionRouter.get('/logout', async (req, res) => {
     req.session.destroy(( e =>

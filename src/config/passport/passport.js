@@ -54,21 +54,23 @@ const initializePassport = () => {
 }))
 
 passport.use('github', new GithubStrategy({
-    clientID: 'Iv1.73490861f78cbe4d',
-    clientSecret: 'b4e3a38392220ee395681c1e7d7afa0464fff4fa',
+    clientID: '',
+    clientSecret: '',
     callbackURL: 'https://localhost:8080/api/session/githubSession'
 }, async (accesToken, refreshToken, profile, done) => {
     try {
-        console.log(accesToken)
-        console.log(refreshToken)
+        // console.log(accesToken)
+        // console.log(refreshToken)
+
         const user = await userModel.findOne({email: profile._json.email}).lean()
         if(user){
             return done(null, user)
         }else{ //si no existe, lo creo
             const randomNumber = crypto.randomUUID()
-            const userCreated = await userModel.create({ first_name: profile._json.email, 
-                last_name: ' ', email: profile._json.email, age : 18, password: createHash(`${profile._json.email}${randomNumber}`) })
-            console.log(randomNumber)
+            console.log(profile._json)
+            const userCreated = await userModel.create({ first_name: profile._json.name, 
+                last_name: ' ', email: profile._json.email, age : 18, password: createHash(`${profile._json.name}${randomNumber}`) })
+            console.log(randomNumber) // name + random
             return done(null, userCreated)
             }
         
