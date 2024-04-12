@@ -25,9 +25,12 @@ const cartSchema = new Schema({
     }
 })
 
-cartSchema.pre('findOne', function () {
+//Previo a hacer un find, findOne, etc, voy a hacer un populate de los productos con pre
+cartSchema.pre('findOne',async function () { 
     this.populate('products.id_prod')
 })
+
+
 
 const cartModel = model("carts", cartSchema)
 export default cartModel 

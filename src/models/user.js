@@ -1,4 +1,5 @@
 import { Schema, model } from 'mongoose';
+import cartModel from './cart.js';
 
 const userSchema = new Schema({
     first_name: {
@@ -25,6 +26,27 @@ const userSchema = new Schema({
     role: {
         type: String,
         default: "User"
+    },
+    cartId: {
+        type: Schema.Types.ObjectId,
+        ref: 'carts'
+    }
+})
+//Previo a guardar en database el user creado, voy a ejecutar un async
+userSchema.pre('save', async function (next) {
+    try {
+        const newCart = await cartModel.create({ products: [] })
+        this.cartId = newCart._id
+    } catch (error) {
+        next(error) //continua(sin el cart porque tuvo error al crearlo)
+    }
+})
+
+userSchema.pre('find', async function (next) { 
+    try {
+        this.populate('cartId')
+    } catch (error) {
+        next(error)
     }
 })
 

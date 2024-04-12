@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import productModel from '../models/products.js';
+import { getProducts, getProduct, createProduct, updateProduct, deleteProduct } from '../controllers/productController.js'
 
 const productsRouter = Router()
 
@@ -7,22 +8,25 @@ const productsRouter = Router()
 productsRouter.get('/', async (req, res) => {
 
     try {
-        let metFilter
         const { limit, page, filter, ord } = req.query
-        const pag = page !== undefined ? page : 1
-        const lim = limit !== undefined ? limit : 10
+        const prods = await getProducts(limit, page, filter, ord)
 
-        if (filter == "true" || filter == "false") {
-            metFilter = "status"
-        } else {
-            if (filter !== undefined) {
-                metFilter = "category"
-            }
-        }
-        const query = metFilter ? { [metFilter]: filter } : {}
-        const ordQuery = ord !== undefined ? {price : ord} : {}
+        //AL CONTROLADOR
+        // let metFilter
+        // const pag = page !== undefined ? page : 1
+        // const lim = limit !== undefined ? limit : 10
 
-        const prods = await productModel.paginate(query , { limit: lim, page: pag, sort: ordQuery});
+        // if (filter == "true" || filter == "false") {
+        //     metFilter = "status"
+        // } else {
+        //     if (filter !== undefined) {
+        //         metFilter = "category"
+        //     }
+        // }
+        // const query = metFilter ? { [metFilter]: filter } : {}
+        // const ordQuery = ord !== undefined ? {price : ord} : {}
+
+        //const prods = await productModel.paginate(query , { limit: lim, page: pag, sort: ordQuery}); -> Al Controlador
         //convierto prods a JSON
         const prodsJSON = prods.docs.map(prod => prod.toJSON())
 
@@ -46,8 +50,9 @@ productsRouter.get('/', async (req, res) => {
 
 productsRouter.get('/:idProd', async (req, res) => {
     try {
+        const prod = await getProduct(idProducto)
         const idProducto = req.params.idProd
-        const prod = await productModel.findById(idProducto)
+        // const prod = await productModel.findById(idProducto)  _>Al Controlador
         if (prod)
             res.status(200).send(prod)
         else
@@ -60,9 +65,9 @@ productsRouter.get('/:idProd', async (req, res) => {
 productsRouter.post('/', async (req, res) => {
     try {
         const product = req.body
-        const mensaje = await productModel.create(product)
-            //Create 201
-            res.status(201).send('Producto creado correctamente')
+        const mensaje = await createProduct(product)
+        //Create 201
+        res.status(201).send('Producto creado correctamente')
 
     } catch (error) {
         res.status(500).send(`Error interno del servidor al crear producto: ${error}`)
@@ -72,8 +77,8 @@ productsRouter.post('/', async (req, res) => {
 productsRouter.put('/:idProd', async (req, res) => {
     try {
         const idProducto = req.params.idProd
-        const updateProduct = req.body //Consulto body
-        const mensaje = await productModel.findByIdAndUpdate(idProducto, updateProduct)
+        const upProduct = req.body //Consulto body
+        const mensaje = await updateProduct(idProducto, upProduct)
         res.status(200).send(mensaje)
     } catch (error) {
         res.status(500).send(`Error interno del servidor al actualizar producto: ${error}`)
@@ -83,7 +88,7 @@ productsRouter.put('/:idProd', async (req, res) => {
 productsRouter.delete('/:idProd', async (req, res) => {
     try {
         const idProducto = req.params.idProd
-        const mensaje = await productModel.findByIdAndDelete(idProducto)
+        const mensaje = await deleteProduct(idProducto)
         res.status(200).send(mensaje)
     } catch (error) {
         res.status(500).send(`Error interno del servidor al eliminar el producto: ${error}`)

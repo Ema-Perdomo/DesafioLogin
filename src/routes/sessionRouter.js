@@ -38,15 +38,30 @@ sessionRouter.get('/github', passport.authenticate('github', { scope: ['user: em
 sessionRouter.get('/githubSession', passport.authenticate('github'), async (req, res) => {
     req.session.user = {
         email: req.user.email,
-        first_name: req.user.first_name,
+        first_name: req.user.name,
     }
     res.redirect('/')
 })
+
+    //GOOGLE AUTH
+// app.get('/auth/google',
+//     passport.authenticate('google', { scope: ['profile'] }));
+
+// app.get('/auth/google/callback',
+//     passport.authenticate('google', { failureRedirect: '/login' }),
+//     function (req, res) {
+//         // Successful authentication, redirect home.
+//         res.redirect('/');
+//     });
+
 sessionRouter.get('/logout', async (req, res) => {
-    req.session.destroy(( e =>
+    req.session.destroy((e =>
         e ? res.status(500).send('Error al cerrar sesion') : res.status(200).redirect(/*"api/session/login" o: */ "/")
     ))
 })
 
+sessionRouter.get('/testJWT', passport.authenticate('jwt', { session: false }) , async (req, res) => {
+    res.send(req.user)
+})
 
 export default sessionRouter
